@@ -9,9 +9,11 @@ def get_task_suggestions(task_list):
     task_text = "\n".join([f"- {task}" for task in task_list])
 
     prompt = (
-        "Here is a list of tasks from my Todoist. "
-        "Please categorize them (e.g., work, home, errands), suggest priorities (low, medium, high), "
-        "and identify anything that looks duplicate, vague, or should be broken into subtasks:\n\n"
+        "Here is a structured list of tasks and subtasks from my Todoist. "
+        "Please categorize them, suggest priorities (low, medium, high), identify duplicates, vague entries, and possible reorganizations. "
+        "Suggest new categories I should be using if you detect I could organize my tasks better."
+        "Help me think about due dates as well and suggest if I need to change any, either because I have too many on a given day or because one is dependent on another or for any other reason you might think of."
+        "Subtasks are indented beneath their parent tasks:\n\n"
         f"{task_text}"
     )
 
