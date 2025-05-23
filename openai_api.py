@@ -25,7 +25,7 @@ def get_task_summary(task_descriptions):
                 "Take a look at existing categories and let me know if I should recategorize anything or create new categories altogether."
                 "Suggest priorities if you think I should have them (low, medium, high), and identify any duplicates or vague entries."
                 "Help me think about due dates as well and suggest if I need to change any, either because I have too many on a given day or because one is dependent on another for any reason you might think of."
-                "Then ask: 'How many specific, actionable suggestions would you like?' Don't give any suggestions yet—just the summary and that one question."
+                "Do not include any numbered or bulleted suggestions or specific improvements yet—just a summary in paragraph form."
             )
         }
     ]
@@ -40,11 +40,15 @@ def get_task_summary(task_descriptions):
 
 
 def get_task_improvement_suggestions(messages, num_suggestions):
+  
     messages.append({
     "role": "user",
-    "content": f"I’d like {num_suggestions} specific, actionable suggestions. Please list each one on its own line starting with '- '."
+    "content": (
+        f"Thank you. Now please give me exactly {num_suggestions} specific, actionable suggestions based on the task list I provided. "
+        "Each suggestion should be its own standalone improvement I can make, clearly written. "
+        "Start each one with '- '. Do not repeat the summary or ask any questions. Just give the suggestions."
+    )
     })
-
 
     response = client.chat.completions.create(
         model="gpt-4o",

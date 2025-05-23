@@ -28,8 +28,8 @@ if __name__ == "__main__":
 
     # Step 2: Interactive CLI approval loop
     approved_suggestions = []
-    print("\n📝 GPT Raw Suggestions:\n")
-    print(suggestions)
+    #print("\n📝 GPT Raw Suggestions:\n")
+    #print(suggestions)
     for line in suggestions.splitlines():
         stripped = line.strip()
         if not stripped or not stripped.startswith("- "):
