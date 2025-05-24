@@ -1,9 +1,9 @@
 # openai_api.py
 
+import streamlit as st
 from openai import OpenAI
-from config import OPENAI_API_KEY
 
-client = OpenAI(api_key=OPENAI_API_KEY)
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 def get_task_summary(task_descriptions):
     task_text = "\n".join(task_descriptions)

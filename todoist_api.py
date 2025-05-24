@@ -1,5 +1,6 @@
 import requests
-from config import TODOIST_API_TOKEN
+import streamlit as st
+TODOIST_API_KEY = st.secrets["TODOIST_API_TOKEN"]
 from datetime import datetime
 
 def extract_task_descriptions(limit=10):
