@@ -8,7 +8,7 @@ if "authenticated" in st.session_state and st.session_state["authenticated"]:
     if st.button("🔁 Start Over"):
         for key in list(st.session_state.keys()):
             del st.session_state[key]
-        st.experimental_rerun()
+        st.rerun()
 
 # Step 1: Authentication
 if "authenticated" not in st.session_state:
@@ -18,7 +18,7 @@ if not st.session_state.authenticated:
     password = st.text_input("🔐 Enter app password", type="password")
     if password == st.secrets.get("APP_PASSWORD"):
         st.session_state.authenticated = True
-        st.experimental_rerun()
+        st.rerun()
     elif password:
         st.error("❌ Incorrect password")
         st.stop()
