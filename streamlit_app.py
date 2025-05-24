@@ -47,7 +47,7 @@ if "task_limit_confirmed" not in st.session_state:
     if st.button("✔️ Confirm Task Count"):
         st.session_state["task_limit"] = task_limit
         st.session_state["task_limit_confirmed"] = True
-        st.experimental_rerun()
+        st.rerun()
 
     st.stop()
 
