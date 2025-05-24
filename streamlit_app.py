@@ -5,7 +5,7 @@ from openai_api import get_task_improvement_suggestions
 
 st.set_page_config(page_title="GPT Todoist Assistant", layout="centered")
 
-# Authentication
+# 🔐 Authentication
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 
@@ -18,49 +18,54 @@ if not st.session_state.authenticated:
         st.error("❌ Incorrect password")
         st.stop()
 
+# 🧠 Header
 st.title("🧠 Todoist Assistant Powered by ChatGPT")
 
-# Reset button
+# 🔁 Reset Button
 if st.button("🔁 Start Over"):
     for key in list(st.session_state.keys()):
         del st.session_state[key]
     st.rerun()
 
-# Step 1: Show total open tasks and ask for task limit
+# STEP 1: Show task count and get how many to analyze
 if "task_limit_confirmed" not in st.session_state:
     with st.spinner("Counting your open Todoist tasks..."):
         total = count_open_tasks()
 
     st.markdown(f"You currently have **{total} open tasks** in Todoist.")
 
-    selected = st.number_input(
-        "How many tasks would you like to analyze?",
+    task_input = st.number_input(
+        "Choose how many tasks to analyze:",
         min_value=1,
         max_value=total,
         value=min(10, total),
         step=1,
-        key="task_limit_temp"
+        key="task_limit_input"
     )
 
-    if st.button("📋 Analyze Tasks"):
-        st.session_state["task_limit"] = selected
+    if st.button("✔️ Confirm Task Count"):
+        st.session_state["task_limit"] = task_input
         st.session_state["task_limit_confirmed"] = True
         st.rerun()
 
     st.stop()
 
-# Step 2: Run GPT assistant once task_limit is confirmed
-if st.session_state.get("task_limit_confirmed") and st.session_state.get("task_limit"):
-    with st.spinner("Analyzing tasks with GPT..."):
-        run_productivity_assistant(st.session_state["task_limit"])
+# STEP 2: Analyze button (only shown after count confirmed)
+if st.session_state.get("task_limit_confirmed") and not st.session_state.get("analysis_complete"):
+    if st.button("📋 Analyze Tasks"):
+        with st.spinner("Analyzing tasks with GPT..."):
+            run_productivity_assistant(st.session_state["task_limit"])
+            st.session_state["analysis_complete"] = True
+        st.rerun()
+    st.stop()
 
-# Step 3: Display GPT summary
+# STEP 3: Display GPT summary
 if "summary" in st.session_state:
     st.markdown("### 🔍 GPT Summary")
     for paragraph in st.session_state["summary"].split("\n\n"):
         st.markdown(paragraph.strip())
 
-# Step 4: Suggestion generation
+# STEP 4: Get Suggestions
 if "messages" in st.session_state and not st.session_state.get("pending"):
     num = st.number_input("How many suggestions would you like?", min_value=1, max_value=20, value=3)
 
@@ -71,7 +76,7 @@ if "messages" in st.session_state and not st.session_state.get("pending"):
             st.session_state["pending"] = lines
             st.session_state["approved"] = []
 
-# Step 5: Suggestion review
+# STEP 5: Approve / Skip loop
 if st.session_state.get("pending"):
     suggestion = st.session_state["pending"][0]
     st.markdown("### ✨ Suggestion")
@@ -85,7 +90,7 @@ if st.session_state.get("pending"):
         st.session_state["pending"].pop(0)
         st.rerun()
 
-# Step 6: Final output
+# STEP 6: Final Output
 if st.session_state.get("pending") == [] and "approved" in st.session_state:
     st.markdown("### ✅ Approved Suggestions")
 
