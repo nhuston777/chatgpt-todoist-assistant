@@ -20,8 +20,29 @@ if not st.session_state.authenticated:
 
 st.title("🧠 Todoist Assistant Powered by ChatGPT")
 
-# Step 2: Display open task count (no session state change yet)
+# Step 2: Show open task count
 with st.spinner("🔄 Fetching task count from Todoist..."):
     total_tasks = count_open_tasks()
 
 st.markdown(f"You currently have **{total_tasks} open tasks** in Todoist.")
+
+# Step 3: Let the user choose how many tasks to analyze
+if "task_limit_confirmed" not in st.session_state:
+    task_limit = st.number_input(
+        "How many tasks would you like to analyze?",
+        min_value=1,
+        max_value=total_tasks,
+        value=min(10, total_tasks),
+        step=1,
+        key="task_limit_input"
+    )
+
+    if st.button("✔️ Confirm Task Count"):
+        st.session_state["task_limit"] = task_limit
+        st.session_state["task_limit_confirmed"] = True
+        st.experimental_rerun()
+
+    st.stop()
+
+# Display confirmed value
+st.success(f"✅ Task limit confirmed: {st.session_state['task_limit']} tasks")
