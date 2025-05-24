@@ -1,4 +1,5 @@
 import streamlit as st
+from todoist_api import count_open_tasks
 
 st.set_page_config(page_title="GPT Todoist Assistant", layout="centered")
 
@@ -19,5 +20,8 @@ if not st.session_state.authenticated:
 
 st.title("🧠 Todoist Assistant Powered by ChatGPT")
 
-# Temporary test message
-st.success("You are authenticated!")
+# Step 2: Display open task count (no session state change yet)
+with st.spinner("🔄 Fetching task count from Todoist..."):
+    total_tasks = count_open_tasks()
+
+st.markdown(f"You currently have **{total_tasks} open tasks** in Todoist.")
