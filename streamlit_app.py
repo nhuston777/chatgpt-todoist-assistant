@@ -3,6 +3,13 @@ from todoist_api import count_open_tasks
 
 st.set_page_config(page_title="GPT Todoist Assistant", layout="centered")
 
+# 🔁 Reset button (always show after login)
+if "authenticated" in st.session_state and st.session_state["authenticated"]:
+    if st.button("🔁 Start Over"):
+        for key in list(st.session_state.keys()):
+            del st.session_state[key]
+        st.experimental_rerun()
+
 # Step 1: Authentication
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
@@ -11,7 +18,7 @@ if not st.session_state.authenticated:
     password = st.text_input("🔐 Enter app password", type="password")
     if password == st.secrets.get("APP_PASSWORD"):
         st.session_state.authenticated = True
-        st.rerun()
+        st.experimental_rerun()
     elif password:
         st.error("❌ Incorrect password")
         st.stop()
@@ -44,5 +51,5 @@ if "task_limit_confirmed" not in st.session_state:
 
     st.stop()
 
-# Display confirmed value
+# Step 4: Confirmed value displayed
 st.success(f"✅ Task limit confirmed: {st.session_state['task_limit']} tasks")
