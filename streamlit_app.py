@@ -1,6 +1,6 @@
 import streamlit as st
 
-import streamlit as st
+st.set_page_config(page_title="GPT Todoist Assistant", layout="centered")
 
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
@@ -17,7 +17,7 @@ if not st.session_state.authenticated:
 from todoist_api import extract_task_descriptions
 from openai_api import get_task_summary, get_task_improvement_suggestions
 
-st.set_page_config(page_title="GPT Todoist Assistant", layout="centered")
+
 st.title("🧠 Todoist Assistant Powered by ChatGPT")
 
 # Reset button
