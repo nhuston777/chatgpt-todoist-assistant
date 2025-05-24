@@ -1,7 +1,7 @@
 import streamlit as st
 from todoist_api import count_open_tasks, extract_task_descriptions
 from openai_api import get_task_summary
-from main import get_gpt_suggestions  # <-- NEW
+from main import get_gpt_suggestions
 
 st.set_page_config(page_title="GPT Todoist Assistant", layout="centered")
 
@@ -52,7 +52,7 @@ if "task_limit_confirmed" not in st.session_state:
         st.session_state["task_limit"] = task_limit
         st.session_state["task_limit_confirmed"] = True
 
-        # 🧹 Clear any previous GPT state
+        # 🧹 Clear all downstream state
         for key in ["summary", "messages", "task_descriptions", "pending", "approved"]:
             if key in st.session_state:
                 del st.session_state[key]
@@ -65,7 +65,7 @@ if "task_limit_confirmed" not in st.session_state:
 st.success(f"✅ Task limit confirmed: {st.session_state['task_limit']} tasks")
 
 # Step 5: Pull tasks and send to GPT
-if "summary" not in st.session_state:
+if "summary" not in st.session_state or "messages" not in st.session_state:
     with st.spinner("📋 Pulling tasks and sending to GPT..."):
         task_descriptions = extract_task_descriptions(limit=st.session_state["task_limit"])
         summary, messages = get_task_summary(task_descriptions)
@@ -82,8 +82,13 @@ st.markdown("### 🔍 GPT Summary")
 for paragraph in st.session_state["summary"].split("\n\n"):
     st.markdown(paragraph.strip())
 
+# 🛠 Reset if "pending" exists but is empty (from earlier broken run)
+if "pending" in st.session_state and not st.session_state["pending"]:
+    del st.session_state["pending"]
+    st.rerun()
+
 # Step 7: Ask how many suggestions to generate
-if not st.session_state.get("pending"):
+if "pending" not in st.session_state and "messages" in st.session_state:
     num = st.number_input("How many suggestions would you like?", min_value=1, max_value=20, value=3)
     if st.button("🤖 Get Suggestions"):
         with st.spinner("Generating suggestions from GPT..."):
