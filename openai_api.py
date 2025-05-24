@@ -26,6 +26,8 @@ def get_task_summary(task_descriptions):
                 "Suggest priorities if you think I should have them (low, medium, high), and identify any duplicates or vague entries."
                 "Help me think about due dates as well and suggest if I need to change any, either because I have too many on a given day or because one is dependent on another for any reason you might think of."
                 "Do not include any numbered or bulleted suggestions or specific improvements yet—just a summary in paragraph form."
+                "Format the summary using multiple paragraphs with clear line breaks (`\\n\\n`) where they naturally occur. "
+                "Then end your response. Do not ask any follow-up questions."
             )
         }
     ]
