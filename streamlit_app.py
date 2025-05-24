@@ -3,7 +3,7 @@ from todoist_api import count_open_tasks
 
 st.set_page_config(page_title="GPT Todoist Assistant", layout="centered")
 
-# 🔁 Reset button (always show after login)
+# 🔁 Reset button
 if "authenticated" in st.session_state and st.session_state["authenticated"]:
     if st.button("🔁 Start Over"):
         for key in list(st.session_state.keys()):
@@ -27,13 +27,15 @@ if not st.session_state.authenticated:
 
 st.title("🧠 Todoist Assistant Powered by ChatGPT")
 
-# Step 2: Show open task count
-with st.spinner("🔄 Fetching task count from Todoist..."):
-    total_tasks = count_open_tasks()
+# Step 2: Cache open task count
+if "total_tasks" not in st.session_state:
+    with st.spinner("🔄 Fetching task count from Todoist..."):
+        st.session_state["total_tasks"] = count_open_tasks()
 
+total_tasks = st.session_state["total_tasks"]
 st.markdown(f"You currently have **{total_tasks} open tasks** in Todoist.")
 
-# Step 3: Let the user choose how many tasks to analyze
+# Step 3: Let user choose how many tasks to analyze
 if "task_limit_confirmed" not in st.session_state:
     task_limit = st.number_input(
         "How many tasks would you like to analyze?",
@@ -51,5 +53,5 @@ if "task_limit_confirmed" not in st.session_state:
 
     st.stop()
 
-# Step 4: Confirmed value displayed
+# Step 4: Display confirmed value
 st.success(f"✅ Task limit confirmed: {st.session_state['task_limit']} tasks")
