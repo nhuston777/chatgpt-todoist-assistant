@@ -26,21 +26,31 @@ if st.button("🔁 Start Over"):
         del st.session_state[key]
     st.rerun()
 
-# Step 1: Show total tasks and get analysis input
-if "task_limit" not in st.session_state:
+# Step 1: Show total open tasks and ask for task limit
+if "task_limit_confirmed" not in st.session_state:
     with st.spinner("Counting your open Todoist tasks..."):
         total = count_open_tasks()
+
     st.markdown(f"You currently have **{total} open tasks** in Todoist.")
-    st.session_state["task_limit"] = st.number_input(
+
+    selected = st.number_input(
         "How many tasks would you like to analyze?",
         min_value=1,
         max_value=total,
         value=min(10, total),
-        step=1
+        step=1,
+        key="task_limit_temp"
     )
 
-# Step 2: Analyze Tasks
-if st.button("📋 Analyze Tasks"):
+    if st.button("📋 Analyze Tasks"):
+        st.session_state["task_limit"] = selected
+        st.session_state["task_limit_confirmed"] = True
+        st.rerun()
+
+    st.stop()
+
+# Step 2: Run GPT assistant once task_limit is confirmed
+if st.session_state.get("task_limit_confirmed") and st.session_state.get("task_limit"):
     with st.spinner("Analyzing tasks with GPT..."):
         run_productivity_assistant(st.session_state["task_limit"])
 
@@ -50,7 +60,7 @@ if "summary" in st.session_state:
     for paragraph in st.session_state["summary"].split("\n\n"):
         st.markdown(paragraph.strip())
 
-# Step 4: Ask how many suggestions to generate
+# Step 4: Suggestion generation
 if "messages" in st.session_state and not st.session_state.get("pending"):
     num = st.number_input("How many suggestions would you like?", min_value=1, max_value=20, value=3)
 
@@ -61,7 +71,7 @@ if "messages" in st.session_state and not st.session_state.get("pending"):
             st.session_state["pending"] = lines
             st.session_state["approved"] = []
 
-# Step 5: Interactive suggestion approval
+# Step 5: Suggestion review
 if st.session_state.get("pending"):
     suggestion = st.session_state["pending"][0]
     st.markdown("### ✨ Suggestion")
@@ -75,7 +85,7 @@ if st.session_state.get("pending"):
         st.session_state["pending"].pop(0)
         st.rerun()
 
-# Step 6: Final summary and download
+# Step 6: Final output
 if st.session_state.get("pending") == [] and "approved" in st.session_state:
     st.markdown("### ✅ Approved Suggestions")
 
