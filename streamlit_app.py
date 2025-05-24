@@ -1,4 +1,19 @@
 import streamlit as st
+
+import streamlit as st
+
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
+
+if not st.session_state.authenticated:
+    password = st.text_input("🔐 Enter app password", type="password")
+    if password == st.secrets["APP_PASSWORD"]:
+        st.session_state.authenticated = True
+        st.experimental_rerun()
+    elif password:
+        st.error("❌ Incorrect password")
+        st.stop()
+
 from todoist_api import extract_task_descriptions
 from openai_api import get_task_summary, get_task_improvement_suggestions
 
