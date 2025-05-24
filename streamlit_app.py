@@ -9,7 +9,7 @@ if not st.session_state.authenticated:
     password = st.text_input("🔐 Enter app password", type="password")
     if password == st.secrets["APP_PASSWORD"]:
         st.session_state.authenticated = True
-        st.experimental_rerun()
+        st.rerun()
     elif password:
         st.error("❌ Incorrect password")
         st.stop()
