@@ -1,5 +1,4 @@
 import requests
-import streamlit as st
 import os
 from config import TODOIST_API_TOKEN
 from datetime import datetime
@@ -96,3 +95,16 @@ def extract_task_descriptions(limit=10):
         task_descriptions.extend(format_task(task))
 
     return task_descriptions
+
+
+def count_open_tasks():
+    base_url = "https://api.todoist.com/rest/v2"
+    headers = {"Authorization": f"Bearer {TODOIST_API_TOKEN}"}
+    
+    response = requests.get(f"{base_url}/tasks", headers=headers)
+    if response.status_code == 200:
+        tasks = response.json()
+        return len([t for t in tasks if not t.get("parent_id")])
+    else:
+        print(f"Error fetching task count: {response.status_code}: {response.text}")
+        return 0
