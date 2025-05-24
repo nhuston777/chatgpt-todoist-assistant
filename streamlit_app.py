@@ -95,22 +95,27 @@ if "pending" not in st.session_state and "messages" in st.session_state:
             st.session_state["pending"] = parsed
         st.rerun()
 
-# Step 8: Approval loop
+# Step 8: Suggestion approval loop
 if st.session_state.get("pending"):
-    current = st.session_state["pending"][0]
-    st.markdown("### ✨ Suggestion")
-    st.write(current)
+    if st.session_state["pending"]:  # still suggestions left
+        current = st.session_state["pending"][0]
+        st.markdown("### ✨ Suggestion")
+        st.write(current)
 
-    col1, col2 = st.columns(2)
-    if col1.button("✅ Approve"):
-        st.session_state["approved"].append(st.session_state["pending"].pop(0))
-        st.rerun()
-    if col2.button("⏭️ Skip"):
-        st.session_state["pending"].pop(0)
+        col1, col2 = st.columns(2)
+        if col1.button("✅ Approve"):
+            st.session_state["approved"].append(st.session_state["pending"].pop(0))
+            st.rerun()
+        if col2.button("⏭️ Skip"):
+            st.session_state["pending"].pop(0)
+            st.rerun()
+    else:
+        # ✅ All suggestions handled — clear "pending" to prevent re-entry
+        del st.session_state["pending"]
         st.rerun()
 
 # Step 9: Show and export approved suggestions
-if st.session_state.get("pending") == [] and "approved" in st.session_state:
+if "approved" in st.session_state and "pending" not in st.session_state:
     st.markdown("### ✅ Approved Suggestions")
 
     if st.session_state["approved"]:
