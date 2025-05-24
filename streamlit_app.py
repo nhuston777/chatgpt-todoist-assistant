@@ -50,6 +50,12 @@ if "task_limit_confirmed" not in st.session_state:
     if st.button("✔️ Confirm Task Count"):
         st.session_state["task_limit"] = task_limit
         st.session_state["task_limit_confirmed"] = True
+
+        # 🧹 Clear any previous GPT state
+        for key in ["summary", "messages", "task_descriptions", "pending", "approved"]:
+            if key in st.session_state:
+                del st.session_state[key]
+
         st.rerun()
 
     st.stop()
