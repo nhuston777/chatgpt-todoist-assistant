@@ -108,3 +108,22 @@ if st.session_state.get("pending"):
     if col2.button("⏭️ Skip"):
         st.session_state["pending"].pop(0)
         st.rerun()
+
+# Step 9: Show and export approved suggestions
+if st.session_state.get("pending") == [] and "approved" in st.session_state:
+    st.markdown("### ✅ Approved Suggestions")
+
+    if st.session_state["approved"]:
+        for suggestion in st.session_state["approved"]:
+            st.success(suggestion)
+    else:
+        st.warning("No suggestions were approved.")
+        st.write("None")
+
+    # ✅ Build downloadable content
+    summary = st.session_state.get("summary", "")
+    approved = st.session_state["approved"]
+    suggestion_text = "\n".join(approved) if approved else "None"
+
+    download_text = f"GPT Summary:\n{summary}\n\nApproved Suggestions:\n{suggestion_text}"
+    st.download_button("📄 Download Summary + Suggestions", download_text, file_name="gpt_todoist_summary.txt")
