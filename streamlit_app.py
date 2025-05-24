@@ -1,5 +1,6 @@
 import streamlit as st
-from todoist_api import count_open_tasks
+from todoist_api import count_open_tasks, extract_task_descriptions
+from openai_api import get_task_summary
 
 st.set_page_config(page_title="GPT Todoist Assistant", layout="centered")
 
@@ -53,5 +54,23 @@ if "task_limit_confirmed" not in st.session_state:
 
     st.stop()
 
-# Step 4: Display confirmed value
+# Step 4: Show confirmed input
 st.success(f"✅ Task limit confirmed: {st.session_state['task_limit']} tasks")
+
+# Step 5: Pull tasks and send to GPT
+if "summary" not in st.session_state:
+    with st.spinner("📋 Pulling tasks and sending to GPT..."):
+        task_descriptions = extract_task_descriptions(limit=st.session_state["task_limit"])
+        summary, messages = get_task_summary(task_descriptions)
+
+        st.session_state["task_descriptions"] = task_descriptions
+        st.session_state["summary"] = summary
+        st.session_state["messages"] = messages
+        st.session_state["approved"] = []
+        st.session_state["pending"] = []
+    st.rerun()
+
+# Step 6: Display GPT summary
+st.markdown("### 🔍 GPT Summary")
+for paragraph in st.session_state["summary"].split("\n\n"):
+    st.markdown(paragraph.strip())
