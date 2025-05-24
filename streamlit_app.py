@@ -1,6 +1,7 @@
 import streamlit as st
 from todoist_api import count_open_tasks, extract_task_descriptions
 from openai_api import get_task_summary
+from main import get_gpt_suggestions  # <-- NEW
 
 st.set_page_config(page_title="GPT Todoist Assistant", layout="centered")
 
@@ -80,3 +81,25 @@ if "summary" not in st.session_state:
 st.markdown("### 🔍 GPT Summary")
 for paragraph in st.session_state["summary"].split("\n\n"):
     st.markdown(paragraph.strip())
+
+# Step 7: Ask how many suggestions to generate
+if not st.session_state.get("pending"):
+    num = st.number_input("How many suggestions would you like?", min_value=1, max_value=20, value=3)
+    if st.button("🤖 Get Suggestions"):
+        with st.spinner("Generating suggestions from GPT..."):
+            st.session_state["pending"] = get_gpt_suggestions(st.session_state["messages"], num)
+        st.rerun()
+
+# Step 8: Suggestion approval loop
+if st.session_state.get("pending"):
+    current = st.session_state["pending"][0]
+    st.markdown("### ✨ Suggestion")
+    st.write(current)
+
+    col1, col2 = st.columns(2)
+    if col1.button("✅ Approve"):
+        st.session_state["approved"].append(st.session_state["pending"].pop(0))
+        st.rerun()
+    if col2.button("⏭️ Skip"):
+        st.session_state["pending"].pop(0)
+        st.rerun()
