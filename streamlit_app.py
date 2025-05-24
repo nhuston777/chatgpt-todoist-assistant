@@ -23,8 +23,8 @@ if st.button("🔁 Start Over"):
         del st.session_state[key]
     st.rerun()
 
-# Unified prompt to select task limit using main.py logic
-if "task_limit" not in st.session_state:
+# Prompt only after login
+if st.session_state.authenticated and "task_limit" not in st.session_state:
     st.session_state["task_limit"] = prompt_task_limit(interactive=True, streamlit_obj=st)
 
 # Main GPT analysis trigger
