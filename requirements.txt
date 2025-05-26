@@ -2,3 +2,5 @@ streamlit
 openai
 requests
 python-dotenv
+fastapi
+uvicorn
